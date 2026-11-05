@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>都市綠洲 - 台中公園線上影展專題 | Taichung Park Film Festival</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="探索「都市綠洲-台中公園」主題影展。透過影像記錄這座百年公園的動植物生態、歷史古蹟湖心亭與當代都市人的放鬆時光。">
+    <meta name="keywords" content="台中公園, 都市綠洲, 影展專題, 湖心亭, 紀錄片, 生態影展, 台中景點, 響應式影展網站">
+    <meta name="author" content="都市綠洲影展策展小組">
+    <!-- Open Graph for Social Sharing -->
+    <meta property="og:title" content="都市綠洲 - 台中公園線上影展專題">
+    <meta property="og:description" content="透過光影鏡頭，走進百年台中公園，感受自然生態與都市人文的交融。">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#ebf8ff',
+                            100: '#ceeafd',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                            800: '#0c4a6e',
+                            900: '#0a3651',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 模擬外部 CSS 檔案架構 (CSS/styles.css 檔案內容嵌入) -->
+    <style>
+        /* CSS 結構說明：
+           此處樣式對應專案結構之 `css/styles.css`
+           提供客製化滾動條、過渡動畫與圖像遮罩效果
+        */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+        }
+
+        /* 隱藏滾動條但保持滾動 */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* 影片播放按鈕懸停動畫 */
+        .play-btn-glow {
+            box-shadow: 0 0 25px rgba(2, 132, 199, 0.6);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased flex flex-col min-h-screen">
+
+    <!-- 頂部導覽列 Header & Navbar -->
+    <header class="sticky top-0 z-40 bg-brand-800 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & 品牌標題 -->
+                <div class="flex items-center space-x-3">
+                    <button id="mobile-sidebar-toggle" class="md:hidden text-slate-200 hover:text-white focus:outline-none p-2 rounded-lg hover:bg-brand-700" aria-label="打開選單">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-tree text-brand-100 text-2xl"></i>
+                        <span class="font-bold text-lg sm:text-xl tracking-wide text-white">都市綠洲影展 <span class="text-brand-100 font-normal text-sm hidden sm:inline">| 台中公園專題</span></span>
+                    </div>
+                </div>
+
+                <!-- 桌面端頂部導覽連結 -->
+                <nav class="hidden md:flex space-x-1">
+                    <button onclick="switchTab('overview')" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-white bg-brand-700 transition">影展總覽</button>
+                    <button onclick="switchTab('films')" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-100 hover:bg-brand-700 transition">參展影片</button>
+                    <button onclick="switchTab('scenes')" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-100 hover:bg-brand-700 transition">景點地圖</button>
+                    <button onclick="switchTab('schedule')" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-100 hover:bg-brand-700 transition">放映時刻</button>
+                    <button onclick="switchTab('about')" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-100 hover:bg-brand-700 transition">關於專題</button>
+                </nav>
+
+                <!-- 右側行動呼籲按鈕 -->
+                <div class="flex items-center space-x-2">
+                    <button onclick="openBookingModal()" class="bg-brand-500 hover:bg-brand-600 text-white text-xs sm:text-sm font-semibold px-4 py-2 rounded-full shadow hover:shadow-lg transition duration-200 flex items-center gap-1.5">
+                        <i class="fa-solid fa-ticket"></i>
+                        <span>免費預約觀影</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主體內容區塊（結合側邊欄與分頁內容） -->
+    <div class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col md:flex-row gap-6">
+
+        <!-- 側邊欄 Sidebar (RWD: 行動端可拉出或摺疊，桌面端固定) -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-2xl transform -translate-x-full md:relative md:translate-x-0 md:w-64 md:shadow-none md:bg-transparent transition-transform duration-300 ease-in-out shrink-0 flex flex-col">
+            <!-- 行動端側邊欄關閉按鈕 -->
+            <div class="p-4 bg-brand-800 text-white flex justify-between items-center md:hidden">
+                <span class="font-bold flex items-center gap-2"><i class="fa-solid fa-compass"></i> 專題導覽</span>
+                <button id="close-sidebar-btn" class="text-white hover:text-slate-200 p-1">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 space-y-6 flex-grow">
+                <!-- 側邊選單 分頁按鈕群 -->
+                <div>
+                    <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">單元分頁導覽</h3>
+                    <ul class="space-y-1.5">
+                        <li>
+                            <button onclick="switchTab('overview')" class="sidebar-tab-btn w-full text-left px-3.5 py-2.5 rounded-xl font-medium text-sm flex items-center gap-3 bg-brand-50 text-brand-700">
+                                <i class="fa-solid fa-house w-5 text-center"></i> 影展主頁總覽
+                            </button>
+                        </li>
+                        <li>
+                            <button onclick="switchTab('films')" class="sidebar-tab-btn w-full text-left px-3.5 py-2.5 rounded-xl font-medium text-sm text-slate-600 hover:bg-slate-100 flex items-center gap-3">
+                                <i class="fa-solid fa-film w-5 text-center"></i> 核心放映影片
+                            </button>
+                        </li>
+                        <li>
+                            <button onclick="switchTab('scenes')" class="sidebar-tab-btn w-full text-left px-3.5 py-2.5 rounded-xl font-medium text-sm text-slate-600 hover:bg-slate-100 flex items-center gap-3">
+                                <i class="fa-solid fa-map-location-dot w-5 text-center"></i> 綠洲地景紀錄
+                            </button>
+                        </li>
+                        <li>
+                            <button onclick="switchTab('schedule')" class="sidebar-tab-btn w-full text-left px-3.5 py-2.5 rounded-xl font-medium text-sm text-slate-600 hover:bg-slate-100 flex items-center gap-3">
+                                <i class="fa-solid fa-calendar-days w-5 text-center"></i> 放映場次場刊
+                            </button>
+                        </li>
+                        <li>
+                            <button onclick="switchTab('about')" class="sidebar-tab-btn w-full text-left px-3.5 py-2.5 rounded-xl font-medium text-sm text-slate-600 hover:bg-slate-100 flex items-center gap-3">
+                                <i class="fa-solid fa-circle-info w-5 text-center"></i> 關於策展理念
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <hr class="border-slate-100">
+
+                <!-- 影展快訊小工具 -->
+                <div>
+                    <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">影展即時資訊</h3>
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100 text-xs text-slate-600 space-y-2">
+                        <div class="flex items-center gap-2 text-brand-600 font-semibold">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span>台中公園 湖心亭戶外廣場</span>
+                        </div>
+                        <p class="leading-relaxed">日期：2026/11/15 - 11/30</p>
+                        <p class="text-slate-400">所有場次均為免費戶外星空放映</p>
+                    </div>
+                </div>
+
+                <!-- 聯絡與分享 -->
+                <div class="pt-2">
+                    <span class="text-xs text-slate-400 block mb-2">分享專題影展</span>
+                    <div class="flex gap-2 text-slate-500">
+                        <button class="w-8 h-8 rounded-full bg-slate-100 hover:bg-brand-50 hover:text-brand-600 flex items-center justify-center transition"><i class="fa-brands fa-facebook-f text-xs"></i></button>
+                        <button class="w-8 h-8 rounded-full bg-slate-100 hover:bg-brand-50 hover:text-brand-600 flex items-center justify-center transition"><i class="fa-brands fa-line text-xs"></i></button>
+                        <button class="w-8 h-8 rounded-full bg-slate-100 hover:bg-brand-50 hover:text-brand-600 flex items-center justify-center transition"><i class="fa-solid fa-link text-xs"></i></button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 側邊欄遮罩 (僅在移動端側邊欄開啟時顯示) -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/40 z-40 hidden md:hidden backdrop-blur-sm"></div>
+
+        <!-- 主要內容區域 Main Area -->
+        <main class="flex-grow min-w-0">
+
+            <!-- ================= 分頁 1: 總覽 Overview ================= -->
+            <section id="tab-overview" class="tab-content active space-y-6">
+                <!-- 焦點 Hero 區塊 -->
+                <div class="relative rounded-3xl overflow-hidden bg-brand-900 text-white shadow-xl">
+                    <!-- 模擬圖片路徑: images/hero-taichung-park.jpg -->
+                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=80" 
+                         alt="台中公園湖心亭" 
+                         class="absolute inset-0 w-full h-full object-cover opacity-40 hover:scale-105 transition duration-700"
+                         onerror="this.src='https://placehold.co/1200x600/0369a1/ffffff?text=Taichung+Park+View'">
+                    <div class="relative z-10 p-6 sm:p-10 lg:p-12 flex flex-col justify-end min-h-[360px] bg-gradient-to-t from-brand-950/90 via-brand-900/40 to-transparent">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-brand-500/80 text-white w-fit mb-3 backdrop-blur-md">
+                            <i class="fa-solid fa-star mr-1.5 text-yellow-300"></i> 年度特別企劃影展
+                        </span>
+                        <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white mb-3">
+                            都市綠洲：台中公園的光影交響
+                        </h1>
+                        <p class="text-sm sm:text-base text-slate-200 max-w-2xl leading-relaxed mb-6">
+                            走進座落於繁華市中心的百年公園，透過六位紀錄片導演的鏡頭，重新看見湖心亭的晨霧、老榕樹下的庶民歲月，與湖面划船的歡笑聲。
+                        </p>
+                        <div class="flex flex-wrap gap-3">
+                            <button onclick="switchTab('films')" class="bg-brand-500 hover:bg-brand-600 text-white font-semibold px-5 py-2.5 rounded-xl shadow-lg transition flex items-center gap-2">
+                                <i class="fa-solid fa-play"></i> 瀏覽參展影片
+                            </button>
+                            <button onclick="switchTab('about')" class="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white font-medium px-5 py-2.5 rounded-xl border border-white/20 transition">
+                                了解專題故事
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 核心特色 RWD Grid 網格系統 -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 hover:border-brand-300 transition">
+                        <div class="w-12 h-12 bg-brand-50 text-brand-600 rounded-xl flex items-center justify-center text-xl mb-4">
+                            <i class="fa-solid fa-feather-pointed"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-lg mb-2">百年人文記憶</h3>
+                        <p class="text-sm text-slate-600 leading-relaxed">紀錄台中公園自1903年創園以來的歲月更疊，呈現湖心亭作為文化地標的獨特魅力。</p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 hover:border-brand-300 transition">
+                        <div class="w-12 h-12 bg-brand-50 text-brand-600 rounded-xl flex items-center justify-center text-xl mb-4">
+                            <i class="fa-solid fa-seedling"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-lg mb-2">都市生態綠肺</h3>
+                        <p class="text-sm text-slate-600 leading-relaxed">捕捉高聳老樹、日月湖鳥類群聚與豐富的水生植物生態，展現城市與自然的和諧。</p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 hover:border-brand-300 transition">
+                        <div class="w-12 h-12 bg-brand-50 text-brand-600 rounded-xl flex items-center justify-center text-xl mb-4">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-lg mb-2">市民休憩生活</h3>
+                        <p class="text-sm text-slate-600 leading-relaxed">拍攝晨間太極、午後划船與夜間散步的市民群像，記錄都市生活中最真實的溫度。</p>
+                    </div>
+                </div>
+
+                <!-- 熱門精選預告列表 -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80">
+                    <div class="flex justify-between items-center mb-5">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-800">焦點預告片</h2>
+                            <p class="text-xs text-slate-500">特別為本次影展製作的短片輯</p>
+                        </div>
+                        <button onclick="switchTab('films')" class="text-sm font-semibold text-brand-600 hover:text-brand-700 flex items-center gap-1">
+                            查看全部 <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- 模擬圖片路徑: images/film-preview-1.jpg -->
+                        <div class="relative group rounded-xl overflow-hidden cursor-pointer" onclick="openTrailerModal('湖心晨曦', '記錄湖心亭在清晨第一道曙光照耀下的寧靜畫面。')">
+                            <img src="https://images.unsplash.com/photo-1519331379826-f10be5486c6f?auto=format&fit=crop&w=600&q=80" 
+                                 alt="影片預告封面" 
+                                 class="w-full h-48 object-cover group-hover:scale-105 transition duration-500"
+                                 onerror="this.src='https://placehold.co/600x400/0284c7/ffffff?text=Film+Preview+1'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-90 group-hover:opacity-95 transition flex flex-col justify-end p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <span class="text-xs text-brand-300 font-medium">開幕片</span>
+                                        <h4 class="text-white font-bold text-base">《湖心晨曦》</h4>
+                                    </div>
+                                    <div class="w-10 h-10 rounded-full bg-brand-500 text-white flex items-center justify-center play-btn-glow group-hover:scale-110 transition">
+                                        <i class="fa-solid fa-play ml-0.5"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 模擬圖片路徑: images/film-preview-2.jpg -->
+                        <div class="relative group rounded-xl overflow-hidden cursor-pointer" onclick="openTrailerModal('樹下歲月', '穿梭於百年老榕樹下，聆聽棋友與散步民眾的時光故事。')">
+                            <img src="https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=600&q=80" 
+                                 alt="影片預告封面" 
+                                 class="w-full h-48 object-cover group-hover:scale-105 transition duration-500"
+                                 onerror="this.src='https://placehold.co/600x400/0369a1/ffffff?text=Film+Preview+2'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-90 group-hover:opacity-95 transition flex flex-col justify-end p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <span class="text-xs text-brand-300 font-medium">人文紀錄</span>
+                                        <h4 class="text-white font-bold text-base">《樹下歲月》</h4>
+                                    </div>
+                                    <div class="w-10 h-10 rounded-full bg-brand-500 text-white flex items-center justify-center play-btn-glow group-hover:scale-110 transition">
+                                        <i class="fa-solid fa-play ml-0.5"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= 分頁 2: 參展影片 Films ================= -->
+            <section id="tab-films" class="tab-content space-y-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-2">影展參展影片目錄</h2>
+                    <p class="text-sm text-slate-500 mb-6">點擊影片卡片可預覽詳細劇情簡介與放映時間。</p>
+
+                    <!-- RWD 網格系統 Grid System (1欄 / 2欄 / 3欄) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                        <!-- 卡片 1 -->
+                        <div class="bg-slate-50 rounded-xl overflow-hidden border border-slate-200 flex flex-col hover:shadow-md transition">
+                            <div class="relative h-44 overflow-hidden">
+                                <!-- images/films/film1.jpg -->
+                                <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=500&q=80" alt="影片封面" class="w-full h-full object-cover">
+                                <span class="absolute top-3 left-3 bg-brand-700 text-white text-xs px-2.5 py-1 rounded-full font-medium">紀錄長片</span>
+                            </div>
+                            <div class="p-4 flex-grow flex flex-col justify-between">
+                                <div>
+                                    <h3 class="font-bold text-slate-800 text-base mb-1">《湖畔微風》</h3>
+                                    <p class="text-xs text-slate-500 mb-3">導演：張文賢 | 片長：45分鐘</p>
+                                    <p class="text-xs text-slate-600 line-clamp-3 leading-relaxed mb-4">
+                                        記錄日月湖畔划船近三十年的老師傅，如何在日復一日的水波與遊客笑聲中，凝視台中這座城市的發展與轉變。
+                                    </p>
+                                </div>
+                                <button onclick="openTrailerModal('湖畔微風', '詳細資訊：本片獲得獨立影展最佳攝影提名，細緻記錄划船職人的日常生活。')" class="w-full py-2 bg-brand-50 hover:bg-brand-100 text-brand-700 rounded-lg text-xs font-semibold transition">
+                                    查看細節與預告
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 卡片 2 -->
+                        <div class="bg-slate-50 rounded-xl overflow-hidden border border-slate-200 flex flex-col hover:shadow-md transition">
+                            <div class="relative h-44 overflow-hidden">
+                                <!-- images/films/film2.jpg -->
+                                <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=500&q=80" alt="影片封面" class="w-full h-full object-cover">
+                                <span class="absolute top-3 left-3 bg-brand-700 text-white text-xs px-2.5 py-1 rounded-full font-medium">生態短片</span>
+                            </div>
+                            <div class="p-4 flex-grow flex flex-col justify-between">
+                                <div>
+                                    <h3 class="font-bold text-slate-800 text-base mb-1">《樹冠上的鄰居》</h3>
+                                    <p class="text-xs text-slate-500 mb-3">導演：林棲棲 | 片長：25分鐘</p>
+                                    <p class="text-xs text-slate-600 line-clamp-3 leading-relaxed mb-4">
+                                        深入台中公園古樹叢林，觀察夜鷺、松鼠與豐富鳥類在繁忙都會中心築巢生存的驚奇生態。
+                                    </p>
+                                </div>
+                                <button onclick="openTrailerModal('樹冠上的鄰居', '詳細資訊：使用超長焦鏡頭與夜視鏡頭捕捉都市珍貴生態畫面。')" class="w-full py-2 bg-brand-50 hover:bg-brand-100 text-brand-700 rounded-lg text-xs font-semibold transition">
+                                    查看細節與預告
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 卡片 3 -->
+                        <div class="bg-slate-50 rounded-xl overflow-hidden border border-slate-200 flex flex-col hover:shadow-md transition">
+                            <div class="relative h-44 overflow-hidden">
+                                <!-- images/films/film3.jpg -->
+                                <img src="https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&w=500&q=80" alt="影片封面" class="w-full h-full object-cover">
+                                <span class="absolute top-3 left-3 bg-brand-700 text-white text-xs px-2.5 py-1 rounded-full font-medium">歷史專題</span>
+                            </div>
+                            <div class="p-4 flex-grow flex flex-col justify-between">
+                                <div>
+                                    <h3 class="font-bold text-slate-800 text-base mb-1">《1903年的那座橋》</h3>
+                                    <p class="text-xs text-slate-500 mb-3">導演：陳史威 | 片長：60分鐘</p>
+                                    <p class="text-xs text-slate-600 line-clamp-3 leading-relaxed mb-4">
+                                        結合珍貴歷史照片與老居民口述歷史，重現中山橋與湖心亭跨越百年的建築與文化軌跡。
+                                    </p>
+                                </div>
+                                <button onclick="openTrailerModal('1903年的那座橋', '詳細資訊：數位修復數十張歷史老照片，帶您穿梭百年時空。')" class="w-full py-2 bg-brand-50 hover:bg-brand-100 text-brand-700 rounded-lg text-xs font-semibold transition">
+                                    查看細節與預告
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= 分頁 3: 景點地圖 Scenes ================= -->
+            <section id="tab-scenes" class="tab-content space-y-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-2">影展取景與走讀地圖</h2>
+                    <p class="text-sm text-slate-500 mb-6">了解影片中出現的經典台中公園地景。</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- 地景 1 -->
+                        <div class="flex gap-4 p-4 rounded-xl border border-slate-100 bg-slate-50">
+                            <!-- images/scenes/pavilion.jpg -->
+                            <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=200&q=80" alt="湖心亭" class="w-24 h-24 rounded-lg object-cover shrink-0">
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-base">台中公園湖心亭</h4>
+                                <span class="text-xs text-brand-600 font-medium">市定古蹟 / 取景地點</span>
+                                <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                                    雙脊歇山頂式拜亭建築，為台中市最具代表性的精神象徵，也是本次影展戶外主放映場。
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- 地景 2 -->
+                        <div class="flex gap-4 p-4 rounded-xl border border-slate-100 bg-slate-50">
+                            <!-- images/scenes/bridge.jpg -->
+                            <img src="https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&w=200&q=80" alt="中山橋" class="w-24 h-24 rounded-lg object-cover shrink-0">
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-base">朱紅中山橋</h4>
+                                <span class="text-xs text-brand-600 font-medium">歷史木橋 / 取景地點</span>
+                                <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                                    日治時期打造的紅色木造橋樑，橫跨日月湖面，在許多紀錄片中作為時空交會的象徵景象。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= 分頁 4: 放映時刻 Schedule ================= -->
+            <section id="tab-schedule" class="tab-content space-y-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-2">放映時刻表</h2>
+                    <p class="text-sm text-slate-500 mb-6">現場提供免費野餐墊與星空座椅，請提前預約入場。</p>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm border-collapse">
+                            <thead>
+                                <tr class="bg-brand-50 text-brand-800 border-b border-brand-100">
+                                    <th class="p-3.5 font-semibold">日期</th>
+                                    <th class="p-3.5 font-semibold">放映時間</th>
+                                    <th class="p-3.5 font-semibold">片名</th>
+                                    <th class="p-3.5 font-semibold">地點</th>
+                                    <th class="p-3.5 font-semibold text-center">狀態</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-slate-600">
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3.5 font-medium">11/15 (五)</td>
+                                    <td class="p-3.5">19:00 - 20:30</td>
+                                    <td class="p-3.5 font-semibold text-slate-800">《湖心晨曦》 (開幕片)</td>
+                                    <td class="p-3.5">湖心亭草皮區</td>
+                                    <td class="p-3.5 text-center"><span class="px-2.5 py-1 text-xs rounded-full bg-emerald-100 text-emerald-700 font-medium">開放預約</span></td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3.5 font-medium">11/16 (六)</td>
+                                    <td class="p-3.5">19:00 - 20:10</td>
+                                    <td class="p-3.5 font-semibold text-slate-800">《樹冠上的鄰居》</td>
+                                    <td class="p-3.5">湖心亭草皮區</td>
+                                    <td class="p-3.5 text-center"><span class="px-2.5 py-1 text-xs rounded-full bg-emerald-100 text-emerald-700 font-medium">開放預約</span></td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3.5 font-medium">11/22 (五)</td>
+                                    <td class="p-3.5">19:00 - 20:45</td>
+                                    <td class="p-3.5 font-semibold text-slate-800">《1903年的那座橋》</td>
+                                    <td class="p-3.5">望月亭階梯區</td>
+                                    <td class="p-3.5 text-center"><span class="px-2.5 py-1 text-xs rounded-full bg-amber-100 text-amber-700 font-medium">即將額滿</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= 分頁 5: 關於專題 About ================= -->
+            <section id="tab-about" class="tab-content space-y-6">
+                <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200/80 leading-relaxed space-y-4">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-2">關於策展理念</h2>
+                    <p class="text-slate-600 text-sm sm:text-base">
+                        在快速運轉的現代都市生活中，我們常常忽視了身邊沉靜呼吸的綠意。「都市綠洲 - 台中公園影展」致力於透過影像與光影，為市民打開一扇重新認識這座城市的窗口。
+                    </p>
+                    <p class="text-slate-600 text-sm sm:text-base">
+                        台中公園自1903年興建以來，歷經了百年的轉化與重生。它不僅僅是一塊城市綠地，更是這座城市集體記憶的容器。本次展覽結合影音創作、走讀地圖與戶外放映，邀請大家一起坐在草地上，感受自然生態與人文時光的碰撞。
+                    </p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- 頁尾 Footer -->
+    <footer class="bg-brand-900 text-white border-t border-brand-800 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-tree text-brand-300"></i>
+                    <span class="font-bold text-base">都市綠洲 - 台中公園影展專題</span>
+                </div>
+                <p class="text-xs text-brand-200 text-center">
+                    &copy; 2026 台中公園專題影展團隊. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 彈出互動視窗 Modal 1: 預告片播放預覽 Modal -->
+    <div id="trailer-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl border border-slate-100">
+            <div class="p-4 bg-brand-800 text-white flex justify-between items-center">
+                <h3 id="modal-title" class="font-bold text-base">影片簡介與預告</h3>
+                <button onclick="closeTrailerModal()" class="text-slate-300 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <!-- 模擬影音播放預覽區塊 -->
+                <div class="w-full h-56 bg-slate-900 rounded-xl flex flex-col items-center justify-center text-white mb-4 relative overflow-hidden">
+                    <i class="fa-solid fa-circle-play text-5xl text-brand-500 hover:scale-110 transition cursor-pointer"></i>
+                    <span class="text-xs text-slate-400 mt-2">點擊播放精彩預告片段</span>
+                </div>
+                <p id="modal-description" class="text-sm text-slate-600 leading-relaxed mb-4">
+                    影片詳細資訊載入中...
+                </p>
+                <div class="flex justify-end">
+                    <button onclick="closeTrailerModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition">
+                        關閉視窗
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 彈出互動視窗 Modal 2: 免費預約觀影 Modal -->
+    <div id="booking-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl border border-slate-100">
+            <div class="p-4 bg-brand-800 text-white flex justify-between items-center">
+                <h3 class="font-bold text-base flex items-center gap-2">
+                    <i class="fa-solid fa-ticket"></i> 線上免費座位預約
+                </h3>
+                <button onclick="closeBookingModal()" class="text-slate-300 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form onsubmit="handleBookingSubmit(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">姓名</label>
+                    <input type="text" required placeholder="請輸入姓名" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-brand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">電子郵件</label>
+                    <input type="email" required placeholder="example@email.com" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-brand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">預約場次</label>
+                    <select class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-brand-500">
+                        <option>11/15 (五) 19:00 《湖心晨曦》</option>
+                        <option>11/16 (六) 19:00 《樹冠上的鄰居》</option>
+                        <option>11/22 (五) 19:00 《1903年的那座橋》</option>
+                    </select>
+                </div>
+                <div class="pt-2 flex gap-3">
+                    <button type="button" onclick="closeBookingModal()" class="w-1/2 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition">
+                        取消
+                    </button>
+                    <button type="submit" class="w-1/2 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold rounded-lg shadow transition">
+                        送出預約
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript 邏輯控制 (模擬外部 JS 模組) -->
+    <script>
+        /* ================= 側邊欄控制邏輯 (RWD 手持裝置支援) ================= */
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const mobileToggleBtn = document.getElementById('mobile-sidebar-toggle');
+        const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+
+        function openSidebar() {
+            sidebar.classList.remove('-translate-x-full');
+            sidebarOverlay.classList.remove('hidden');
+        }
+
+        function closeSidebar() {
+            sidebar.classList.add('-translate-x-full');
+            sidebarOverlay.classList.add('hidden');
+        }
+
+        mobileToggleBtn.addEventListener('click', openSidebar);
+        closeSidebarBtn.addEventListener('click', closeSidebar);
+        sidebarOverlay.addEventListener('click', closeSidebar);
+
+        /* ================= 分頁切換邏輯 (Tab System) ================= */
+        function switchTab(tabId) {
+            // 1. 隱藏所有分頁
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // 2. 顯示指定分頁
+            const targetTab = document.getElementById(`tab-${tabId}`);
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
+
+            // 3. 更新側邊欄與頂部選單高亮樣式
+            updateActiveButtons(tabId);
+
+            // 4. 手機版切換分頁後自動關閉側邊欄
+            closeSidebar();
+
+            // 滾動回頂部
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateActiveButtons(tabId) {
+            // 更新側邊欄按鈕狀態
+            const sidebarBtns = document.querySelectorAll('.sidebar-tab-btn');
+            sidebarBtns.forEach(btn => {
+                if (btn.getAttribute('onclick').includes(tabId)) {
+                    btn.className = "sidebar-tab-btn w-full text-left px-3.5 py-2.5 rounded-xl font-medium text-sm flex items-center gap-3 bg-brand-50 text-brand-700";
+                } else {
+                    btn.className = "sidebar-tab-btn w-full text-left px-3.5 py-2.5 rounded-xl font-medium text-sm text-slate-600 hover:bg-slate-100 flex items-center gap-3";
+                }
+            });
+
+            // 更新頂部導覽列按鈕狀態
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                if (link.getAttribute('onclick').includes(tabId)) {
+                    link.className = "nav-link px-3 py-2 rounded-md text-sm font-medium text-white bg-brand-700 transition";
+                } else {
+                    link.className = "nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-100 hover:bg-brand-700 transition";
+                }
+            });
+        }
+
+        /* ================= 預告片視窗與預約視窗 Modal 邏輯 ================= */
+        function openTrailerModal(title, desc) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-description').textContent = desc;
+            document.getElementById('trailer-modal').classList.remove('hidden');
+        }
+
+        function closeTrailerModal() {
+            document.getElementById('trailer-modal').classList.add('hidden');
+        }
+
+        function openBookingModal() {
+            document.getElementById('booking-modal').classList.remove('hidden');
+        }
+
+        function closeBookingModal() {
+            document.getElementById('booking-modal').classList.add('hidden');
+        }
+
+        function handleBookingSubmit(event) {
+            event.preventDefault();
+            closeBookingModal();
+            // 彈出自訂非 alert 提示
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-5 right-5 bg-brand-700 text-white px-5 py-3 rounded-xl shadow-xl z-50 flex items-center gap-2 animate-bounce';
+            toast.innerHTML = '<i class="fa-solid fa-circle-check"></i> 預約成功！通知信已寄至您的電子郵件。';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+    </script>
+</body>
+</html>
